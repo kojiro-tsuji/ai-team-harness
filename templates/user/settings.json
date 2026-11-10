@@ -1,0 +1,79 @@
+{
+  "$comment": "ユーザー全体の設定（~/.claude/settings.json）に足すもの。{{HARNESS}} をハーネスの住所（/ 区切り）にし、{{HOME}} をホームの住所（//c/Users/<名前> の形）にする。今ある設定の項目は残して、足す。allow で Claude Code 自身の確認画面をなくし、止める・聞くは deny と Guard だけが決める（2026-11-09）。",
+  "env": {
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "1",
+    "CLAUDE_CODE_USE_POWERSHELL_TOOL": "0"
+  },
+  "permissions": {
+    "disableBypassPermissionsMode": "disable",
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": ["{{HARNESS}}"],
+    "allow": ["Bash", "Read", "Edit", "Write", "NotebookEdit", "WebFetch", "WebSearch"],
+    "deny": [
+      "PowerShell",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/.dev.vars)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/secrets/**)",
+      "Read(**/credentials*.json)",
+      "Read(**/service-account*.json)",
+      "Read({{HOME}}/.ssh/**)",
+      "Read({{HOME}}/.git-credentials)",
+      "Read({{HOME}}/.expo/**)",
+      "Read({{HOME}}/AppData/Roaming/xdg.config/.wrangler/**)",
+      "Read({{HOME}}/AppData/Roaming/GitHub CLI/**)",
+      "Read({{HOME}}/.claude/.credentials.json)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push * --force *)",
+      "Bash(git push * -f *)",
+      "Bash(git clean *)",
+      "Bash(git reset --hard *)",
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(printenv *)",
+      "Bash(env)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell|Edit|Write|MultiEdit|NotebookEdit|WebFetch|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{HARNESS}}/hooks/guard.mjs\"",
+            "timeout": 30,
+            "onFailure": "block"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{HARNESS}}/hooks/guard.mjs\" --post",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{HARNESS}}/hooks/prompt-log.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

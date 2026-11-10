@@ -1,0 +1,42 @@
+# ===== 秘密情報（絶対にコミットしない） =====
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+id_rsa*
+id_ed25519*
+credentials*.json
+service-account*.json
+secrets/
+*.secret
+*.secrets
+
+# ===== Claude Code の個人設定（端末ごと・共有しない） =====
+.claude/settings.local.json
+CLAUDE.local.md
+
+# ===== OS・エディタ =====
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# ===== ログ・一時ファイル =====
+*.log
+# Guard Log（PC の住所や実行したコマンドが入るので、Harness には入れない）
+logs/
+*.jsonl
+# Worktree（Harness のフォルダで会話を開いたときに作られることがある）
+.claude/worktrees/
+tmp/
+.tmp/
+node_modules/
+
+# プロジェクトの台帳（PC ごとの情報。ひな形は templates/projects.md）
+/projects.md

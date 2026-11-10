@@ -1,0 +1,7 @@
+{
+  "project": "<略称。projects.md と同じ>",
+  "records": "team",
+  "base": "main",
+  "pushNeedsConfirm": true,
+  "checks": ["<検査のコマンド。作業場所の根で順に流す>"]
+}
